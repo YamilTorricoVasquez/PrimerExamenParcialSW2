@@ -1,0 +1,35 @@
+# --- PyTorch (CPU-only) ---
+# Ultralytics depende de PyTorch. Sin esta línea, pip instala por defecto
+# la versión con soporte CUDA, mucho más pesada (~700MB+) e innecesaria en
+# Render (no hay GPU en los planes estándar). Esto acelera el build y evita
+# fallos por límite de espacio/tiempo de compilación.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch>=2.2.0
+torchvision>=0.17.0
+
+ultralytics>=8.2.0
+lap>=0.5.12
+
+# opencv-python-headless (no opencv-python): la versión no-headless requiere
+# librerías gráficas del sistema (libGL) que no existen en contenedores
+# de servidor como los de Render, y el build falla o el import truena.
+opencv-python-headless>=4.9.0
+
+numpy>=1.26.0
+pandas>=2.2.0
+flask>=3.0.0
+gunicorn>=21.2.0
+matplotlib>=3.8.0
+seaborn>=0.13.0
+
+# Generación de fichas PDF por jugador (liviana, sin dependencias del sistema)
+fpdf2>=2.7.0
+
+# OCR experimental usado por dos funciones opcionales: sugerir nombres de
+# equipo desde el marcador de TV, y sugerir el número de camiseta de cada
+# jugador. ADVERTENCIA: aumenta bastante el tamaño/tiempo de build (descarga
+# modelos la primera vez que se usa, requiere internet en ese momento). Si tu
+# despliegue en Render es muy ajustado en tiempo/memoria y no vas a usar
+# estas funciones, puedes comentar esta línea — el resto del dashboard sigue
+# funcionando igual, simplemente esas opciones no estarán disponibles.
+easyocr>=1.7.0

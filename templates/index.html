@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Análisis de Fútbol</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="page">
+        <header class="hero">
+            <h1>Panel de Análisis de Rendimiento</h1>
+            <p>Sube tu video, indica los equipos, y obtén un resumen fácil de entender para mejorar tus decisiones como entrenador.</p>
+        </header>
+
+        {% if error %}
+        <div class="alert alert-error">{{ error }}</div>
+        {% endif %}
+
+        <form action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data" class="card" id="analyze-form">
+            <h2>1. Sube tu video</h2>
+            <input type="file" name="video" id="video-input" accept=".mp4,.avi,.mov,.mkv" required>
+
+            <h2 style="margin-top:24px;">2. Identifica los equipos</h2>
+            <div class="two-col">
+                <div>
+                    <label for="team_a_name">Nombre del Equipo 1</label>
+                    <input type="text" id="team_a_name" name="team_a_name" value="Equipo A">
+                </div>
+                <div>
+                    <label for="team_b_name">Nombre del Equipo 2</label>
+                    <input type="text" id="team_b_name" name="team_b_name" value="Equipo B">
+                </div>
+            </div>
+
+            <details class="scoreboard-box">
+                <summary>¿Tu video es una transmisión de TV con marcador en pantalla? Prueba a autocompletar (experimental)</summary>
+                <p class="hint">
+                    Esto intenta leer texto desde la franja superior del video. Solo funciona
+                    si hay un marcador visible; en video de cámara táctica normalmente no
+                    aplica. Es una sugerencia, no un resultado garantizado.
+                </p>
+                <button type="button" id="scoreboard-btn" class="btn-secondary">Intentar leer nombres del marcador</button>
+                <div id="scoreboard-status" class="hint"></div>
+                <div id="scoreboard-suggestions" class="chip-list"></div>
+            </details>
+
+            <h2 style="margin-top:24px;">3. Plantilla de jugadores (opcional)</h2>
+            <p class="hint">
+                Escribe el número de camiseta y nombre de cada jugador. Después del análisis
+                podrás asignar cada nombre al jugador detectado con un clic. Si activas la
+                lectura experimental de dorsal, el sistema intentará pre-rellenar la
+                asignación cuando logre leer el número (no siempre lo logra).
+            </p>
+            <div id="roster-rows"></div>
+            <button type="button" id="add-roster-row" class="btn-secondary">+ Agregar jugador</button>
+
+            <div class="checkbox-row">
+                <input type="checkbox" id="try_jersey_ocr" name="try_jersey_ocr">
+                <label for="try_jersey_ocr">Intentar leer el número de camiseta automáticamente (experimental, más lento)</label>
+            </div>
+
+            <input type="hidden" name="roster_json" id="roster_json">
+
+            <details class="advanced-box">
+                <summary>Configuración avanzada</summary>
+                <div class="three-col">
+                    <div>
+                        <label for="fps">FPS del video</label>
+                        <input type="number" id="fps" name="fps" value="25" step="1" min="1">
+                    </div>
+                    <div>
+                        <label for="conf">Confianza mínima de detección</label>
+                        <input type="number" id="conf" name="conf" value="0.3" step="0.05" min="0.1" max="0.9">
+                    </div>
+                    <div>
+                        <label for="vid_stride">Procesar 1 de cada N fotogramas</label>
+                        <input type="number" id="vid_stride" name="vid_stride" value="2" step="1" min="1" max="10">
+                    </div>
+                </div>
+                <p class="hint">Sube el valor de "fotogramas a saltar" en computadoras sin GPU para analizar más rápido.</p>
+            </details>
+
+            <button type="submit" class="btn-primary">Analizar video</button>
+        </form>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

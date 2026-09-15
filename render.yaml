@@ -1,0 +1,16 @@
+# render.yaml
+# Permite desplegar este proyecto en Render como "Blueprint": en el
+# dashboard de Render usa "New +" -> "Blueprint" y apunta a este repositorio.
+# Si prefieres crear el servicio manualmente desde la interfaz de Render,
+# no necesitas este archivo (usa la misma configuración a mano).
+services:
+  - type: web
+    name: analisis-futbol-dashboard
+    env: python
+    plan: starter          # el plan gratuito ("free") suele quedarse sin memoria
+                            # al cargar YOLOv8 + procesar video; ver README.
+    buildCommand: pip install -r requirements.txt
+    startCommand: "gunicorn app:app --workers 1 --threads 4 --timeout 120 --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
